@@ -200,7 +200,16 @@ const directRequest = async ({ authToken, ct0Token, method, endpoint, queryParam
 
 // ============ Express 应用 ============
 const app = express();
-app.use(express.json({ limit: '10mb' }));
+
+// Vercel Serverless 兼容：处理请求体预解析问题
+app.use((req, res, next) => {
+    // 如果 Vercel 已经预解析了请求体（req.body 是对象），直接使用
+    if (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0) {
+        return next();
+    }
+    // 否则使用 express.json() 解析
+    express.json({ limit: '10mb' })(req, res, next);
+});
 
 // Token 认证中间件
 app.use((req, res, next) => {
@@ -233,7 +242,7 @@ app.use((req, res, next) => {
  * - extraHeaders: 额外请求头
  */
 app.post('/api/twitter/proxy', async (req, res) => {
-    const { authToken, ct0Token, headers, flag, apiMethod, endpoint } = req.body;
+    const { authToken, ct0Token, headers, flag, apiMethod, endpoint } = req.body || {};
     
     // 参数验证
     if (!authToken || !ct0Token) return res.status(400).json({ success: false, error: '缺少: authToken, ct0Token' });
