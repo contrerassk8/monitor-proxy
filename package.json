@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "dotenv": "^17.2.1",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "serverless-http": "^3.2.0",
     "twitter-openapi-typescript": "^0.0.53",
     "twitter-openapi-typescript-generated": "^0.0.37",
